@@ -1,30 +1,211 @@
-"# Sweat & Save — PRD
+"# Sweat & Save
 
-## Project Overview
-**App Name:** Sweat & Save  
-**Type:** Marketing/Content Website  
-**URL:** https://sweat-save.preview.emergentagent.com  
-**Last Updated:** Feb 2026
+A modern, responsive website focused on personal finance, fitness, and health. Build strength, build wealth.
 
-## Problem Statement
-Create a modern, responsive website called \"Sweat & Save\" focused on personal finance, fitness, and health. Features: Hero section with tagline \"Build Strength. Build Wealth.\", newsletter CTA, content sections for Fitness/Finance/Wellness, a Blog combining finance and fitness articles, and a Contact page with newsletter signup, social media links, and contact form.
+## 🚀 Features
 
-## Target Audience
-Health-conscious individuals aged 20-40 interested in improving both fitness and personal finances simultaneously.
+- **Hero Section:** "Build Strength. Build Wealth." tagline
+- **Newsletter CTA:** Email subscription with MongoDB persistence
+- **Content Sections:** Fitness, Finance, Wellness pages
+- **Blog:** Articles combining finance and fitness
+- **Contact Page:** Newsletter signup, social links, contact form
+- **Responsive Design:** Neo-brutalist style with Tailwind CSS
+- **Animations:** Smooth transitions with framer-motion
 
-## Architecture
-- **Frontend:** React (CRA + CRACO), React Router v7, Tailwind CSS, framer-motion animations
-- **Backend:** FastAPI (Python), MongoDB (Motor async driver)
-- **Design:** Neo-brutalist style, Outfit (headings) + Manrope (body) fonts
-- **Color Palette:** Orange (#f97316) = Fitness, Emerald (#10b981) = Finance, Blue (#2563eb) = Wellness
+## 🛠 Tech Stack
 
-## Pages Implemented
+### Frontend
+- **React** (Create React App)
+- **React Router** v6 for routing
+- **Tailwind CSS** for styling
+- **Framer Motion** for animations
+- **Axios** for API calls
+
+### Backend
+- **Django** with Django REST Framework
+- **MongoDB** with PyMongo
+- **Python** 3.9+
+
+### Infrastructure
+- **Docker** & Docker Compose
+- **MongoDB Compass** for database management
+
+## 📋 Prerequisites
+
+- **Docker & Docker Compose** (recommended)
+- **Node.js** 18+ (for local frontend development)
+- **Python** 3.9+ (for local backend development)
+- **MongoDB** (local or cloud instance)
+
+## 🚀 Quick Start with Docker
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd sweatNsave
+   ```
+
+2. **Run with Docker Compose:**
+   ```bash
+   docker-compose up --build
+   ```
+
+3. **Access the application:**
+   - **Frontend:** http://localhost:3000
+   - **Backend API:** http://localhost:8001/api
+   - **MongoDB:** localhost:27017
+
+## 🏃‍♂️ Local Development Setup
+
+### Backend Setup
+```bash
+cd app/backend
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver 8001
+```
+
+### Frontend Setup
+```bash
+cd app/frontend
+npm install
+npm start
+```
+
+### Database
+Start MongoDB locally:
+```bash
+brew services start mongodb-community  # macOS
+# Or use MongoDB Compass to connect to mongodb://localhost:27017
+```
+
+## 📡 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/` | Health check |
+| POST | `/api/newsletter` | Subscribe to newsletter |
+| GET | `/api/newsletter/subscribers` | Get all subscribers (admin) |
+| POST | `/api/contact` | Submit contact form |
+| GET | `/api/contact/submissions` | Get all submissions (admin) |
+
+### Example API Usage
+```bash
+# Health check
+curl http://localhost:8001/api/
+
+# Subscribe to newsletter
+curl -X POST http://localhost:8001/api/newsletter \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com"}'
+
+# Submit contact form
+curl -X POST http://localhost:8001/api/contact \
+  -H "Content-Type: application/json" \
+  -d '{"name": "John Doe", "email": "john@example.com", "subject": "Hello", "message": "Test message"}'
+```
+
+## 📄 Pages
+
 | Page | Route | Status |
 |------|--------|--------|
-| Home | / | ✅ |
-| Fitness | /fitness | ✅ |
-| Finance | /finance | ✅ |
-| Wellness | /wellness | ✅ |
+| Home | `/` | ✅ |
+| Fitness | `/fitness` | ✅ |
+| Finance | `/finance` | ✅ |
+| Wellness | `/wellness` | ✅ |
+| Blog | `/blog` | ✅ |
+| Contact | `/contact` | ✅ |
+
+## 🎨 Design System
+
+- **Fonts:** Outfit (headings), Manrope (body)
+- **Colors:**
+  - Orange (#f97316) - Fitness
+  - Emerald (#10b981) - Finance
+  - Blue (#2563eb) - Wellness
+- **Style:** Neo-brutalist with bold borders and shadows
+
+## 🧪 Testing
+
+### Backend Tests
+```bash
+cd app/backend
+python manage.py test
+```
+
+### Frontend Tests
+```bash
+cd app/frontend
+npm test
+```
+
+## 🐳 Docker Commands
+
+```bash
+# Build and run all services
+docker-compose up --build
+
+# Run in background
+docker-compose up -d --build
+
+# Stop services
+docker-compose down
+
+# View logs
+docker-compose logs
+
+# Rebuild specific service
+docker-compose up --build backend
+```
+
+## 📊 Database Management
+
+### MongoDB Compass
+1. Download from https://www.mongodb.com/products/compass
+2. Connect to: `mongodb://localhost:27017`
+3. Database: `test_database`
+4. Collections: `newsletter_subscribers`, `contact_submissions`
+
+### Command Line
+```bash
+mongosh mongodb://localhost:27017
+use test_database
+db.newsletter_subscribers.find().pretty()
+```
+
+## 🔧 Environment Variables
+
+### Backend (.env)
+```
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=test_database
+CORS_ORIGINS=*
+DJANGO_SECRET_KEY=your-secret-key
+DEBUG=1
+```
+
+### Frontend (.env)
+```
+REACT_APP_BACKEND_URL=http://localhost:8001
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 📞 Support
+
+For questions or issues, please use the contact form or create an issue in this repository.
 | Blog | /blog | ✅ |
 | Contact | /contact | ✅ |
 

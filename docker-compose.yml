@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:5.0
+    container_name: sweatnsave_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: test_database
+    volumes:
+      - mongodb_data:/data/db
+
+  backend:
+    build: ./app/backend
+    container_name: sweatnsave_backend
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
+      - DB_NAME=test_database
+      - CORS_ORIGINS=*
+      - DJANGO_SECRET_KEY=your-secret-key-here
+      - DEBUG=1
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ./app/frontend
+    container_name: sweatnsave_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://backend:8001
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data:
