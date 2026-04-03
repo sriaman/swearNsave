@@ -1,0 +1,109 @@
+{
+  "project_name": "Sweat & Save",
+  "theme": "Light",
+  "archetype": "4 (Swiss & High-Contrast) + Energetic Color Accents",
+  "design_philosophy": "Fusion of health and wealth. The design must feel athletic and precise. No generic centered 'SaaS' layouts. High asymmetry, massive negative space, and functional color coding.",
+  "colors": {
+    "background": {
+      "primary": "bg-zinc-50",
+      "secondary": "bg-white",
+      "inverted": "bg-zinc-900"
+    },
+    "brand": {
+      "finance": "text-emerald-500 bg-emerald-500",
+      "fitness": "text-orange-500 bg-orange-500",
+      "wellness": "text-blue-600 bg-blue-600"
+    },
+    "text": {
+      "primary": "text-zinc-950",
+      "secondary": "text-zinc-500",
+      "inverted": "text-white"
+    },
+    "border": "border-zinc-200",
+    "interaction": {
+      "hover_bg": "hover:bg-zinc-100",
+      "focus_ring": "focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+    }
+  },
+  "typography": {
+    "import_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Outfit:wght@300;400;700;900&display=swap",
+    "font_families": {
+      "headings": "Outfit, sans-serif",
+      "body": "Manrope, sans-serif"
+    },
+    "scales": {
+      "h1": "text-5xl sm:text-6xl tracking-tighter font-black leading-none",
+      "h2": "text-3xl sm:text-4xl tracking-tight font-bold",
+      "h3": "text-xl sm:text-2xl font-bold",
+      "body": "text-base text-zinc-600 leading-relaxed",
+      "overline": "text-xs font-bold uppercase tracking-[0.2em] text-zinc-500"
+    }
+  },
+  "layout_and_spacing": {
+    "spacing_scale": "Use generous spacing. Minimum section padding py-24. Component padding p-8 or p-12.",
+    "container": "max-w-7xl mx-auto px-6 md:px-12",
+    "grid_strategy": "MODE A: The 'Tetris' Grid. Never perfectly symmetrical. Mix span-4, span-8 sizes. Leave negative space.",
+    "borders": "Use 1px solid border-zinc-200 to separate sections instead of relying solely on shadows. (Grid Borders - The Technical Look)"
+  },
+  "ui_components": {
+    "buttons": {
+      "primary": "bg-zinc-900 text-white font-bold rounded-none px-8 py-4 hover:bg-orange-500 transition-colors duration-300",
+      "secondary": "bg-white text-zinc-900 border border-zinc-300 font-bold rounded-none px-8 py-4 hover:bg-zinc-50 transition-colors duration-300"
+    },
+    "cards": {
+      "style": "bg-white border border-zinc-200 rounded-none p-8 hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] transition-all duration-300",
+      "note": "Neo-brutalist touch for high energy and performance feel."
+    },
+    "navigation": "Sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-zinc-200. Left-aligned logo, right-aligned links.",
+    "forms": "Use Shadcn Input/Textarea/Button. Customize to have rounded-none, border-zinc-300, and focus:border-zinc-900 focus:ring-0."
+  },
+  "media": {
+    "image_urls": [
+      {
+        "url": "https://images.pexels.com/photos/36717053/pexels-photo-36717053.jpeg",
+        "description": "Hero section background: Dynamic runner silhouetted against sunrise.",
+        "category": "hero"
+      },
+      {
+        "url": "https://images.pexels.com/photos/259091/pexels-photo-259091.jpeg",
+        "description": "Finance section visual: Modern workspace with laptop and charts.",
+        "category": "finance"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1758966071975-b58c681f05e0",
+        "description": "Fitness section visual: Man jogging on a path.",
+        "category": "fitness"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1770761070158-33f939b42799",
+        "description": "Wellness section visual: Freshly sliced oranges on a wooden board.",
+        "category": "wellness"
+      },
+      {
+        "url": "https://images.pexels.com/photos/20528492/pexels-photo-20528492.jpeg",
+        "description": "Abstract colorful gradient for blog thumbnails or accent banners.",
+        "category": "background"
+      }
+    ]
+  },
+  "icons": {
+    "library": "lucide-react",
+    "style": "Use robust, legible icons. Stroke-width 2px."
+  },
+  "accessibility": {
+    "contrast": "Maintain 4.5:1 ratio. Avoid white text on yellow or light orange.",
+    "motion": "Respect prefers-reduced-motion. Animations should be swift (duration-300 or less).",
+    "testing": "All interactive elements must include 'data-testid' attributes (e.g., data-testid='hero-cta-btn', data-testid='nav-finance-link')."
+  },
+  "instructions_to_main_agent": [
+    "Inject the Google Fonts import into index.css or the main HTML head.",
+    "Configure Tailwind font families: sans: ['Manrope', 'sans-serif'], display: ['Outfit', 'sans-serif'].",
+    "Build standard marketing structures using HTML/Tailwind, rely on Shadcn UI only for interactive logic (Forms, Dialogs, Select). Do not use Shadcn Card if it restricts the Neo-brutalist hover effect defined.",
+    "HERO SECTION: Must be asymmetrical. E.g., Massive text block on the left taking up 8 columns, with the runner image taking up the right 4 columns, or a full bleed with a robust overlay.",
+    "Implement distinct pages: Home, Fitness, Finance, Wellness, Blog, Contact using React Router.",
+    "SECTIONS: Use color coding carefully. A fitness challenge card could have an orange accent line. A budgeting tip card gets an emerald accent line.",
+    "Do not center-align the main headings. Left-align for strong optical structure.",
+    "Use framer-motion for simple staggered reveals on scroll, ensuring the 'Grid Item' rule is followed (motion.div as the direct grid child)."
+  ]
+}
+
