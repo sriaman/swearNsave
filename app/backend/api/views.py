@@ -26,12 +26,6 @@ logger = logging.getLogger(__name__)
 JWT_SECRET = os.environ.get('JWT_SECRET', 'unsafe-dev-jwt-secret')
 JWT_ALGORITHM = 'HS256'
 
-load_dotenv(os.path.join(settings.BASE_DIR, '.env'))
-
-mongo_url = os.environ.get('MONGO_URL', settings.MONGO_URL)
-mongo_client = MongoClient(mongo_url)
-db = mongo_client[os.environ.get('DB_NAME', settings.DB_NAME)]
-
 logger = logging.getLogger(__name__)
 
 
@@ -175,15 +169,15 @@ def signup(request):
 
     # Generate JWT token
     token = jwt.encode({
-        'user_id': user['_id'],
+        'user_id': str(user['_id']),
         'email': user['email'],
-        'exp': datetime.now(timezone.utc).timestamp() + (24 * 60 * 60)  # 24 hours
+        'exp': int(datetime.now(timezone.utc).timestamp()) + (24 * 60 * 60) # 24 hours
     }, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     return _cors_json_response({
         'message': 'User created successfully',
         'user': {
-            'id': user['_id'],
+            'id': str(user['_id']),
             'email': user['email'],
             'name': user['name']
         },
@@ -212,15 +206,15 @@ def login(request):
 
     # Generate JWT token
     token = jwt.encode({
-        'user_id': user['_id'],
+        'user_id': str(user['_id']),
         'email': user['email'],
-        'exp': datetime.now(timezone.utc).timestamp() + (24 * 60 * 60)  # 24 hours
+        'exp': int(datetime.now(timezone.utc).timestamp()) + (24 * 60 * 60) # 24 hours
     }, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     return _cors_json_response({
         'message': 'Login successful',
         'user': {
-            'id': user['_id'],
+            'id': str(user['_id']),
             'email': user['email'],
             'name': user['name']
         },
@@ -244,7 +238,7 @@ def verify_token(request):
 
         return _cors_json_response({
             'user': {
-                'id': user['_id'],
+                'id': str(user['_id']),
                 'email': user['email'],
                 'name': user['name']
             }
