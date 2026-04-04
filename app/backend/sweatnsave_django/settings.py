@@ -98,6 +98,7 @@ LOGGING = {
     },
 }
 
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+# MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://mongo:wHbijXraemQPrhyDcyAAeitDXKtypOnC@mongodb.railway.internal:27017')
 DB_NAME = os.environ.get('DB_NAME', 'test_database')
 CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*')

@@ -179,7 +179,7 @@ db.newsletter_subscribers.find().pretty()
 
 ### Backend (.env)
 ```
-MONGO_URL=mongodb://localhost:27017
+MONGO_URL=mongodb://mongo:wHbijXraemQPrhyDcyAAeitDXKtypOnC@mongodb.railway.internal:27017
 DB_NAME=test_database
 CORS_ORIGINS=*
 DJANGO_SECRET_KEY=your-secret-key
