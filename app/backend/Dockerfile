@@ -14,4 +14,5 @@ COPY . .
 
 EXPOSE 8001
 
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8001"]
+# Install gunicorn (add to requirements.txt too)
+CMD ["sh", "-c", "python manage.py migrate && gunicorn sweatnsave_django.wsgi:application --bind 0.0.0.0:$PORT"]
