@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Dumbbell, TrendingUp, Heart, ChevronRight } from 'lucide-react';
+import { ArrowRight, Dumbbell, TrendingUp, Heart, ChevronRight, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -79,6 +80,7 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [loading, setLoading] = useState(false);
+  const { isAuthenticated, openAuthModal } = useAuth();
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
@@ -92,6 +94,13 @@ export default function Home() {
       setStatus('error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleProtectedLink = (e, path) => {
+    if (!isAuthenticated && (path === '/fitness' || path === '/finance' || path === '/wellness')) {
+      e.preventDefault();
+      openAuthModal('login');
     }
   };
 
@@ -241,9 +250,15 @@ export default function Home() {
               >
                 <Link
                   to={section.path}
+                  onClick={(e) => handleProtectedLink(e, section.path)}
                   data-testid={`home-section-${section.label.toLowerCase()}`}
-                  className='block neo-card group overflow-hidden'
+                  className='block neo-card group overflow-hidden relative'
                 >
+                  {!isAuthenticated && (section.path === '/fitness' || section.path === '/finance' || section.path === '/wellness') && (
+                    <div className='absolute top-2 right-2 z-10 bg-zinc-900/80 backdrop-blur-sm p-2 rounded-full'>
+                      <Lock className='w-4 h-4 text-white' />
+                    </div>
+                  )}
                   <div className={`h-1 ${section.bgColor} w-full`} />
                   <div className='relative h-48 overflow-hidden'>
                     <img
@@ -265,7 +280,7 @@ export default function Home() {
                     </h3>
                     <p className='text-zinc-500 text-sm leading-relaxed'>{section.desc}</p>
                     <div className={`mt-4 flex items-center gap-1 ${section.textColor} text-sm font-bold group-hover:gap-2 transition-all duration-300`}>
-                      Explore <ChevronRight className='w-4 h-4' />
+                      {!isAuthenticated && (section.path === '/fitness' || section.path === '/finance' || section.path === '/wellness') ? 'Sign up to access' : 'Explore'} <ChevronRight className='w-4 h-4' />
                     </div>
                   </div>
                 </Link>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Zap } from 'lucide-react';
+import { Menu, X, Zap, User, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const navLinks = [
   { label: 'Home', path: '/' },
@@ -15,6 +16,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { user, logout, openAuthModal, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -25,6 +27,13 @@ export default function Navbar() {
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
+
+  const handleProtectedLink = (e, path) => {
+    if (!isAuthenticated && (path === '/fitness' || path === '/finance' || path === '/wellness')) {
+      e.preventDefault();
+      openAuthModal('login');
+    }
+  };
 
   return (
     <nav
@@ -57,6 +66,7 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
+                onClick={(e) => handleProtectedLink(e, link.path)}
                 data-testid={`nav-${link.label.toLowerCase()}-link`}
                 className={`text-sm font-semibold transition-colors duration-200 relative after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-orange-500 after:transition-all after:duration-300 hover:after:w-full ${
                   location.pathname === link.path
@@ -69,15 +79,38 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Desktop CTA */}
-          <div className='hidden md:block'>
-            <Link
-              to='/contact'
-              data-testid='navbar-cta-btn'
-              className='bg-zinc-900 text-white font-bold text-sm px-5 py-2.5 hover:bg-orange-500 transition-colors duration-300'
-            >
-              Join Newsletter
-            </Link>
+          {/* Desktop Auth */}
+          <div className='hidden md:flex items-center gap-4'>
+            {isAuthenticated ? (
+              <div className='flex items-center gap-3'>
+                <div className='flex items-center gap-2 text-zinc-700'>
+                  <User className='w-4 h-4' />
+                  <span className='text-sm font-medium'>{user?.name}</span>
+                </div>
+                <button
+                  onClick={logout}
+                  className='flex items-center gap-2 text-zinc-600 hover:text-zinc-900 transition-colors'
+                >
+                  <LogOut className='w-4 h-4' />
+                  <span className='text-sm font-medium'>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <div className='flex items-center gap-3'>
+                <button
+                  onClick={() => openAuthModal('login')}
+                  className='text-zinc-600 hover:text-zinc-900 font-medium text-sm transition-colors'
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => openAuthModal('signup')}
+                  className='bg-zinc-900 text-white font-bold text-sm px-4 py-2 hover:bg-orange-500 transition-colors duration-300'
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -102,6 +135,7 @@ export default function Navbar() {
             <Link
               key={link.path}
               to={link.path}
+              onClick={(e) => handleProtectedLink(e, link.path)}
               data-testid={`mobile-nav-${link.label.toLowerCase()}-link`}
               className={`text-base font-semibold py-2 border-b border-zinc-100 ${
                 location.pathname === link.path
@@ -112,14 +146,80 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link
-            to='/contact'
-            className='bg-zinc-900 text-white font-bold text-sm px-5 py-3 text-center hover:bg-orange-500 transition-colors duration-300 mt-2'
-          >
-            Join Newsletter
-          </Link>
+
+          {/* Mobile Auth */}
+          <div className='border-t border-zinc-200 pt-4 mt-2'>
+            {isAuthenticated ? (
+              <div className='space-y-3'>
+                <div className='flex items-center gap-2 text-zinc-700'>
+                  <User className='w-5 h-5' />
+                  <span className='font-medium'>{user?.name}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    logout();
+                    setOpen(false);
+                  }}
+                  className='flex items-center gap-2 w-full text-left text-zinc-600 hover:text-zinc-900 transition-colors py-2'
+                >
+                  <LogOut className='w-5 h-5' />
+                  <span className='font-medium'>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <div className='space-y-3'>
+                <button
+                  onClick={() => {
+                    openAuthModal('login');
+                    setOpen(false);
+                  }}
+                  className='w-full text-left text-zinc-700 hover:text-zinc-900 font-medium py-2 transition-colors'
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => {
+                    openAuthModal('signup');
+                    setOpen(false);
+                  }}
+                  className='w-full bg-zinc-900 text-white font-bold py-3 px-4 hover:bg-orange-500 transition-colors duration-300'
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </nav>
   );
 }
+{
+  navLinks.map(
+  (link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              data-testid={`mobile-nav-${link.label.toLowerCase()}-link`}
+              className={`text-base font-semibold py-2 border-b border-zinc-100 ${
+                location.pathname === link.path
+                  ? 'text-orange-500'
+                  : 'text-zinc-700'
+              }`}
+            >
+              {link.label}
+            </Link>
+          )
+        )
+}
+//           <Link
+//             to='/contact'
+//             className='bg-zinc-900 text-white font-bold text-sm px-5 py-3 text-center hover:bg-orange-500 transition-colors duration-300 mt-2'
+//           >
+//             Join Newsletter
+//           </Link>
+//         </div>
+//       )}
+//     </nav>
+//   );
+// }
