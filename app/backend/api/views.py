@@ -10,8 +10,21 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from pymongo import MongoClient
 from dotenv import load_dotenv
+import jwt
+import bcrypt
 
-from .serializers import ContactSubmissionSerializer, NewsletterSubscribeSerializer
+from .serializers import ContactSubmissionSerializer, NewsletterSubscribeSerializer, UserSignupSerializer, UserLoginSerializer
+
+load_dotenv(os.path.join(settings.BASE_DIR, '.env'))
+
+mongo_url = os.environ.get('MONGO_URL', settings.MONGO_URL)
+mongo_client = MongoClient(mongo_url)
+db = mongo_client[os.environ.get('DB_NAME', settings.DB_NAME)]
+
+logger = logging.getLogger(__name__)
+
+JWT_SECRET = os.environ.get('JWT_SECRET', 'unsafe-dev-jwt-secret')
+JWT_ALGORITHM = 'HS256'
 
 load_dotenv(os.path.join(settings.BASE_DIR, '.env'))
 
@@ -131,3 +144,112 @@ def get_contact_submissions(request):
     logger.info('Received get_contact_submissions request from %s', request.META.get('REMOTE_ADDR'))
     submissions = list(db.contact_submissions.find({}, {'_id': 0}))
     return _cors_json_response({'count': len(submissions), 'submissions': submissions})
+
+
+# Authentication Views
+
+@csrf_exempt
+@require_http_methods(['POST', 'OPTIONS'])
+def signup(request):
+    if request.method == 'OPTIONS':
+        logger.info('Received OPTIONS preflight for /api/auth/signup from %s', request.META.get('REMOTE_ADDR'))
+        return _cors_json_response({}, status=204)
+
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except Exception:
+        payload = {}
+
+    logger.info('Received signup request from %s data=%s', request.META.get('REMOTE_ADDR'), payload)
+    data = UserSignupSerializer(data=payload)
+    if not data.is_valid():
+        return _cors_json_response({'errors': data.errors}, status=400)
+
+    # Check if user already exists
+    existing = db.users.find_one({'email': data.validated_data['email']})
+    if existing:
+        return _cors_json_response({'error': 'User with this email already exists'}, status=400)
+
+    # Create user
+    user = data.create(data.validated_data)
+
+    # Generate JWT token
+    token = jwt.encode({
+        'user_id': user['_id'],
+        'email': user['email'],
+        'exp': datetime.now(timezone.utc).timestamp() + (24 * 60 * 60)  # 24 hours
+    }, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    return _cors_json_response({
+        'message': 'User created successfully',
+        'user': {
+            'id': user['_id'],
+            'email': user['email'],
+            'name': user['name']
+        },
+        'token': token
+    }, status=201)
+
+
+@csrf_exempt
+@require_http_methods(['POST', 'OPTIONS'])
+def login(request):
+    if request.method == 'OPTIONS':
+        logger.info('Received OPTIONS preflight for /api/auth/login from %s', request.META.get('REMOTE_ADDR'))
+        return _cors_json_response({}, status=204)
+
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except Exception:
+        payload = {}
+
+    logger.info('Received login request from %s data=%s', request.META.get('REMOTE_ADDR'), payload)
+    data = UserLoginSerializer(data=payload)
+    if not data.is_valid():
+        return _cors_json_response({'error': 'Invalid credentials'}, status=401)
+
+    user = data.validated_data
+
+    # Generate JWT token
+    token = jwt.encode({
+        'user_id': user['_id'],
+        'email': user['email'],
+        'exp': datetime.now(timezone.utc).timestamp() + (24 * 60 * 60)  # 24 hours
+    }, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    return _cors_json_response({
+        'message': 'Login successful',
+        'user': {
+            'id': user['_id'],
+            'email': user['email'],
+            'name': user['name']
+        },
+        'token': token
+    })
+
+
+@require_http_methods(['GET'])
+def verify_token(request):
+    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+    if not auth_header.startswith('Bearer '):
+        return _cors_json_response({'error': 'No token provided'}, status=401)
+
+    token = auth_header.replace('Bearer ', '')
+
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user = db.users.find_one({'_id': payload['user_id'], 'active': True})
+        if not user:
+            return _cors_json_response({'error': 'User not found'}, status=401)
+
+        return _cors_json_response({
+            'user': {
+                'id': user['_id'],
+                'email': user['email'],
+                'name': user['name']
+            }
+        })
+    except jwt.ExpiredSignatureError:
+        return _cors_json_response({'error': 'Token expired'}, status=401)
+    except jwt.InvalidTokenError:
+        return _cors_json_response({'error': 'Invalid token'}, status=401)

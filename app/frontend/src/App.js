@@ -3,6 +3,9 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import AuthModal from "./components/AuthModal";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Fitness from "./pages/Fitness";
 import Finance from "./pages/Finance";
@@ -20,21 +23,36 @@ function ScrollToTop() {
 
 function AppLayout() {
   return (
-    <div className="App min-h-screen bg-zinc-50 flex flex-col">
-      <ScrollToTop />
-      <Navbar />
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/fitness" element={<Fitness />} />
-          <Route path="/finance" element={<Finance />} />
-          <Route path="/wellness" element={<Wellness />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
+    <AuthProvider>
+      <div className="App min-h-screen bg-zinc-50 flex flex-col">
+        <ScrollToTop />
+        <Navbar />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/fitness" element={
+              <ProtectedRoute>
+                <Fitness />
+              </ProtectedRoute>
+            } />
+            <Route path="/finance" element={
+              <ProtectedRoute>
+                <Finance />
+              </ProtectedRoute>
+            } />
+            <Route path="/wellness" element={
+              <ProtectedRoute>
+                <Wellness />
+              </ProtectedRoute>
+            } />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </main>
+        <Footer />
+        <AuthModal />
+      </div>
+    </AuthProvider>
   );
 }
 
